@@ -3,10 +3,11 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { compareAsc, format } from "date-fns";
 import toast from "react-hot-toast";
 const JobDetails = () => {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [startDate, setStartDate] = useState(new Date());
   const { id } = useParams();
@@ -36,20 +37,23 @@ const JobDetails = () => {
   } = job || {};
 
   // handle form submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const price = form.price.value;
     const email = user?.email;
     const comment = form.comment.value;
     // const deadline = startDate;
+    const jobId = _id;
 
     if (user?.email === buyer?.email)
       return toast.error("Action not permitted");
 
     // 2. deadline validation
+    console.log(compareAsc(new Date(), new Date(deadline)));
+
     if (compareAsc(new Date(), new Date(deadline)) === 1)
-      return toast.error("Deadline Crossed, Biding Forbidden");
+      return toast.error("Deadline Crossed, Bidding Forbidden!");
 
     // 3. price within maximum price range validation
     if (price > max_price)
@@ -57,10 +61,24 @@ const JobDetails = () => {
 
     // 4. offered deadline in within sellers deadline validation
 
-    if (compareAsc(new Date(startDate), new Date(deadline)))
+    if (compareAsc(new Date(startDate), new Date(deadline)) === 1)
       return toast.error("Offer a date within deadline");
 
-    const bidData = { price, email, comment, deadline };
+    const bidData = { jobId, price, email, comment, deadline: startDate };
+
+    try {
+      // 1. make a post request
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/add-bid`,
+        bidData
+      );
+      form.reset();
+      toast.success("Bid successful");
+      navigate("/my-bids");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -97,14 +115,11 @@ const JobDetails = () => {
               </p>
             </div>
             <div className="rounded-full object-cover overflow-hidden w-14 h-14">
-              <img
-                src="https://i.ibb.co.com/qsfs2TW/Ix-I18-R8-Y-400x400.jpg"
-                alt=""
-              />
+              <img referrerPolicy="no-referrer" src={buyer?.photo} alt="" />
             </div>
           </div>
           <p className="mt-6 text-lg font-bold text-gray-600 ">
-            Range: $500 - $600
+            Range: ${min_price} - ${max_price}
           </p>
         </div>
       </div>

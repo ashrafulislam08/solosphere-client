@@ -49,7 +49,10 @@ const UpdateJob = () => {
     };
 
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/update-job/${id}`);
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/update-job/${id}`,
+        formData
+      );
       toast.success("Data updated successfully");
       navigate("/my-posted-jobs");
     } catch (error) {
@@ -64,7 +67,7 @@ const UpdateJob = () => {
           Update a Job
         </h2>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
             <div>
               <label className="text-gray-700 " htmlFor="job_title">
@@ -73,7 +76,7 @@ const UpdateJob = () => {
               <input
                 id="job_title"
                 name="title"
-                defaultValue={job.title}
+                defaultValue={job?.title}
                 type="text"
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
@@ -109,7 +112,7 @@ const UpdateJob = () => {
               <select
                 name="category"
                 id="category"
-                defaultValue={job.category}
+                defaultValue={job?.category}
                 className="border p-2 rounded-md"
               >
                 <option value="Web Development">Web Development</option>
@@ -125,7 +128,7 @@ const UpdateJob = () => {
                 id="min_price"
                 name="min_price"
                 type="number"
-                defaultValue={job.min_price}
+                defaultValue={job?.min_price}
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
             </div>
@@ -138,7 +141,7 @@ const UpdateJob = () => {
                 id="max_price"
                 name="max_price"
                 type="number"
-                defaultValue={job.max_price}
+                defaultValue={job?.max_price}
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
             </div>
@@ -148,7 +151,7 @@ const UpdateJob = () => {
               Description
             </label>
             <textarea
-              defaultValue={job.description}
+              defaultValue={job?.description}
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               name="description"
               id="description"
